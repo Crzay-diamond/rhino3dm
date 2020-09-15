@@ -733,6 +733,28 @@ ON_Line BND_MeshTopologyEdgeList::EdgeLine(int topologyEdgeIndex) const
   return rc;
 }
 
+BND_TUPLE BND_MeshTopologyEdgeList::LinesToArray() const
+{
+  const ON_MeshTopology& top = m_mesh->Topology();
+  int count = top.TopEdgeCount() * 3 * 2;
+  BND_TUPLE rc = CreateTuple(count);
+  int current = 0;
+  for (int i = 0; i < top.TopEdgeCount(); i++)
+  {
+    const ON_MeshTopologyEdge& edge = top.m_tope[i];
+    const ON_MeshTopologyVertex& v0 = top.m_topv[edge.m_topvi[0]];
+    const ON_MeshTopologyVertex& v1 = top.m_topv[edge.m_topvi[1]];
+    const ON_3fPoint& from = m_mesh->m_V[v0.m_vi[0]];
+    const ON_3fPoint& to = m_mesh->m_V[v1.m_vi[0]];
+    SetTuple<float>(rc, current++, from.x);
+    SetTuple<float>(rc, current++, from.y);
+    SetTuple<float>(rc, current++, from.z);
+    SetTuple<float>(rc, current++, to.x);
+    SetTuple<float>(rc, current++, to.y);
+    SetTuple<float>(rc, current++, to.z);
+  }
+  return rc;
+}
 
 BND_MeshNormalList::BND_MeshNormalList(ON_Mesh* mesh, const ON_ModelComponentReference& compref)
 {
@@ -990,6 +1012,7 @@ void initMeshBindings(void*)
   class_<BND_MeshTopologyEdgeList>("MeshTopologyEdgeList")
     .property("count", &BND_MeshTopologyEdgeList::Count)
     .function("edgeLine", &BND_MeshTopologyEdgeList::EdgeLine)
+    .function("edgesToArray", &BND_MeshTopologyEdgeList::LinesToArray)
     ;
 
   class_<BND_MeshFaceList>("MeshFaceList")

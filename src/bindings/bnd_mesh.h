@@ -141,7 +141,7 @@ public:
   //public bool IsSwappableEdge(int topologyEdgeIndex)
   //public bool SwapEdge(int topologyEdgeIndex)
   //public bool IsHidden(int topologyEdgeIndex)
-
+  BND_TUPLE LinesToArray() const;
 };
 
 class BND_MeshNormalList
