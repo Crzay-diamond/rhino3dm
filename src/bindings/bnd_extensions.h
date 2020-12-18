@@ -247,6 +247,7 @@ public:
   static BND_ONXModel* WasmFromByteArray(std::string buffer);
   emscripten::val ToByteArray() const;
   emscripten::val ToByteArray2(const class BND_File3dmWriteOptions* options) const;
+  emscripten::val ToByteArrayTyped(const class BND_File3dmWriteOptions* options) const;
 #endif
   std::string Encode();
   std::string Encode2(const class BND_File3dmWriteOptions* options);

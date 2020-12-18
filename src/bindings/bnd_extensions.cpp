@@ -1141,6 +1141,23 @@ emscripten::val BND_ONXModel::ToByteArray2(const BND_File3dmWriteOptions* option
   return rc;
 }
 
+emscripten::val BND_ONXModel::ToByteArrayTyped(const BND_File3dmWriteOptions* options) const
+{
+  BND_File3dmWriteOptions defaults;
+  if (nullptr == options)
+    options = &defaults;
+
+  ON_Write3dmBufferArchive archive(0, 0, options->VersionForWriting(), ON::Version());
+  archive.SetShouldSerializeUserDataDefault(options->SaveUserData());
+
+  m_model->Write(archive, options->VersionForWriting());
+  const unsigned char* buffer = (const unsigned char*)archive.Buffer();
+  size_t length = archive.SizeOfArchive();
+
+  return emscripten::val(emscripten::typed_memory_view(length, buffer));
+
+}
+
 #endif
 
 BND_ONXModel* BND_ONXModel::FromByteArray(int length, const void* buffer)
@@ -1576,6 +1593,7 @@ void initExtensionsBindings(void*)
     .function("encode", &BND_ONXModel::Encode2, allow_raw_pointers())
     .function("toByteArray", &BND_ONXModel::ToByteArray)
     .function("toByteArray", &BND_ONXModel::ToByteArray2, allow_raw_pointers())
+    .function("toByteArrayTyped", &BND_ONXModel::ToByteArrayTyped, allow_raw_pointers())
     .class_function("decode", &BND_ONXModel::Decode, allow_raw_pointers())
     .function("embeddedFilePaths", &BND_ONXModel::GetEmbeddedFilePaths)
     .function("getEmbeddedFileAsBase64", &BND_ONXModel::GetEmbeddedFileAsBase64)
